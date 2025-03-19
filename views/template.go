@@ -4,8 +4,20 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"net/http"
 )
+
+func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
+	tpl, err := template.ParseFS(fs, patterns...)
+	if err != nil {
+		return Template{}, fmt.Errorf("parsing template: %w", err)
+	}
+
+	return Template{
+		htmlTpl: tpl,
+	}, nil
+}
 
 func Parse(patterns ...string) (Template, error) {
 	tpl, err := template.ParseFiles(patterns...)
