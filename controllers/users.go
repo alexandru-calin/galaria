@@ -4,12 +4,12 @@ import (
 	"net/http"
 )
 
-type User struct {
+type Users struct {
 	Templates struct {
 		New Template
 	}
 }
 
-func (u User) New(w http.ResponseWriter, r *http.Request) {
+func (u Users) New(w http.ResponseWriter, r *http.Request) {
 	u.Templates.New.Execute(w, nil)
 }

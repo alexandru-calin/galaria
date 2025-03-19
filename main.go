@@ -15,7 +15,7 @@ func main() {
 	tpl := views.Must(views.ParseFS(ui.FS, "base.html", "home.html"))
 	r.Get("/", controllers.StaticHandler(tpl))
 
-	usersC := controllers.User{}
+	usersC := controllers.Users{}
 	usersC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "register.html"))
 
 	r.Get("/register", usersC.New)
