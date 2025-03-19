@@ -15,8 +15,10 @@ func main() {
 	tpl := views.Must(views.ParseFS(ui.FS, "base.html", "home.html"))
 	r.Get("/", controllers.StaticHandler(tpl))
 
-	tpl = views.Must(views.ParseFS(ui.FS, "base.html", "register.html"))
-	r.Get("/register", controllers.StaticHandler(tpl))
+	usersC := controllers.User{}
+	usersC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "register.html"))
+
+	r.Get("/register", usersC.New)
 
 	http.ListenAndServe(":4000", r)
 }
