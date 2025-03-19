@@ -2,13 +2,11 @@ package controllers
 
 import (
 	"net/http"
-
-	"github.com/alexandru-calin/galaria/views"
 )
 
 type User struct {
 	Templates struct {
-		New views.Template
+		New Template
 	}
 }
 
