@@ -11,10 +11,7 @@ import (
 func main() {
 	r := chi.NewRouter()
 
-	tpl, err := views.ParseFS(ui.FS, "base.html")
-	if err != nil {
-		panic(err)
-	}
+	tpl := views.Must(views.ParseFS(ui.FS, "base.html"))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		tpl.Execute(w, nil)
