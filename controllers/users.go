@@ -9,7 +9,8 @@ import (
 
 type Users struct {
 	Templates struct {
-		New Template
+		New   Template
+		Login Template
 	}
 	UserService *models.UserService
 }
@@ -30,4 +31,8 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "User created: %+v", user)
+}
+
+func (u Users) Login(w http.ResponseWriter, r *http.Request) {
+	u.Templates.Login.Execute(w, nil)
 }

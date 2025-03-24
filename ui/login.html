@@ -1,6 +1,6 @@
 {{define "main"}}
-<h1 class="mb-4">Register a new account</h1>
-<form action="/users" method="post">
+<h1 class="mb-4">Log in to your account</h1>
+<form action="/login" method="post">
     <div class="row mb-4">
         <div class="col-lg-4">
             <label for="email" class="form-label">Email address</label>
@@ -15,9 +15,9 @@
     </div>
     <div class="row mb-4">
         <div class="col-lg-4">
-            <button type="submit" class="btn btn-success w-100">Register</button>
+            <button type="submit" class="btn btn-success w-100">Login</button>
         </div>
     </div>
-    <div class="form-text">Already have an account? <a href="/login">Login</a></div>
+    <div class="form-text">Don't have an account? <a href="/register">Register</a></div>
 </form>
 {{end}}
