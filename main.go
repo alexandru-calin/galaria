@@ -41,8 +41,9 @@ func main() {
 	usersC.Templates.Login = views.Must(views.ParseFS(ui.FS, "base.html", "login.html"))
 
 	r.Get("/register", usersC.New)
-	r.Get("/login", usersC.Login)
 	r.Post("/users", usersC.Create)
+	r.Get("/login", usersC.Login)
+	r.Post("/login", usersC.ProcessLogin)
 
 	http.ListenAndServe(":4000", r)
 }

@@ -36,3 +36,17 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 func (u Users) Login(w http.ResponseWriter, r *http.Request) {
 	u.Templates.Login.Execute(w, nil)
 }
+
+func (u Users) ProcessLogin(w http.ResponseWriter, r *http.Request) {
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+
+	user, err := u.UserService.Authenticate(email, password)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "User authenticated: %+v", user)
+}
