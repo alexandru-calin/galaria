@@ -1,6 +1,9 @@
 {{define "main"}}
 <h1 class="mb-4">Register a new account</h1>
 <form action="/users" method="post">
+    <div class="d-none">
+        {{csrfField}}
+    </div>
     <div class="row mb-4">
         <div class="col-lg-4">
             <label for="email" class="form-label">Email address</label>

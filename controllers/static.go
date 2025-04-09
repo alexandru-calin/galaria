@@ -6,6 +6,6 @@ import (
 
 func StaticHandler(t Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		t.Execute(w, nil)
+		t.Execute(w, r, nil)
 	}
 }
