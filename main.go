@@ -8,6 +8,7 @@ import (
 	"github.com/alexandru-calin/galaria/ui"
 	"github.com/alexandru-calin/galaria/views"
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/csrf"
 )
 
 func main() {
@@ -45,5 +46,8 @@ func main() {
 	r.Get("/login", usersC.Login)
 	r.Post("/login", usersC.ProcessLogin)
 
-	http.ListenAndServe(":4000", r)
+	csrfKey := "S8XocRepHuI7WOHeWc3RmnxfrrtVVoy0"
+	csrfMw := csrf.Protect([]byte(csrfKey), csrf.Secure(false))
+
+	http.ListenAndServe(":4000", csrfMw(r))
 }
