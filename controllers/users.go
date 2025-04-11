@@ -12,7 +12,8 @@ type Users struct {
 		New   Template
 		Login Template
 	}
-	UserService *models.UserService
+	UserService    *models.UserService
+	SessionService *models.SessionService
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +31,15 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "User created: %+v", user)
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	setCookie(w, CookieSession, session.Token)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
 func (u Users) Login(w http.ResponseWriter, r *http.Request) {
@@ -48,5 +57,31 @@ func (u Users) ProcessLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "User authenticated: %+v", user)
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	setCookie(w, CookieSession, session.Token)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
+}
+
+func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
+	token, err := readCookie(r, CookieSession)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	user, err := u.SessionService.User(token)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	fmt.Fprintf(w, "Current user: %s\n", user.Email)
 }
