@@ -50,6 +50,7 @@ func main() {
 	r.Get("/users/me", usersC.CurrentUser)
 	r.Get("/login", usersC.Login)
 	r.Post("/login", usersC.ProcessLogin)
+	r.Post("/logout", usersC.ProcessLogout)
 
 	csrfKey := "S8XocRepHuI7WOHeWc3RmnxfrrtVVoy0"
 	csrfMw := csrf.Protect([]byte(csrfKey), csrf.Secure(false))
