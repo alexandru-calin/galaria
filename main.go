@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/alexandru-calin/galaria/controllers"
+	"github.com/alexandru-calin/galaria/migrations"
 	"github.com/alexandru-calin/galaria/models"
 	"github.com/alexandru-calin/galaria/ui"
 	"github.com/alexandru-calin/galaria/views"
@@ -30,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	err = models.Migrate(db, "migrations")
+	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
 		panic(err)
 	}
