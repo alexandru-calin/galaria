@@ -18,6 +18,14 @@
                         <li class="nav-item">
                             <a href="/register" class="nav-link">Register</a>
                         </li>
+                        <li class="nav-item">
+                            <form action="/logout" method="post">
+                                <div class="d-none">
+                                    {{csrfField}}
+                                </div>
+                                <button class="btn btn-secondary">Logout</button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </nav>
