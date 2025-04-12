@@ -30,6 +30,11 @@ func main() {
 		panic(err)
 	}
 
+	err = models.Migrate(db, "migrations")
+	if err != nil {
+		panic(err)
+	}
+
 	userService := models.UserService{
 		DB: db,
 	}
