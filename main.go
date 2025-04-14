@@ -55,6 +55,7 @@ func main() {
 	}
 	usersC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "register.html"))
 	usersC.Templates.Login = views.Must(views.ParseFS(ui.FS, "base.html", "login.html"))
+	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(ui.FS, "base.html", "forgot-password.html"))
 
 	// Setup router and routes
 	r := chi.NewRouter()
@@ -68,6 +69,7 @@ func main() {
 	r.Get("/login", usersC.Login)
 	r.Post("/login", usersC.ProcessLogin)
 	r.Post("/logout", usersC.ProcessLogout)
+	r.Get("/forgot-password", usersC.ForgotPassword)
 	r.Route("/users/me", func(r chi.Router) {
 		r.Use(umw.RequireUser)
 		r.Get("/", usersC.CurrentUser)

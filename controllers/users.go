@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/alexandru-calin/galaria/context"
 	"github.com/alexandru-calin/galaria/models"
@@ -10,11 +11,15 @@ import (
 
 type Users struct {
 	Templates struct {
-		New   Template
-		Login Template
+		New            Template
+		Login          Template
+		ForgotPassword Template
+		CheckYourEmail Template
 	}
-	UserService    *models.UserService
-	SessionService *models.SessionService
+	UserService          *models.UserService
+	SessionService       *models.SessionService
+	PasswordResetService *models.PasswordResetService
+	EmailService         *models.EmailService
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +90,35 @@ func (u Users) ProcessLogout(w http.ResponseWriter, r *http.Request) {
 
 	deleteCookie(w, CookieSession)
 	http.Redirect(w, r, "/login", http.StatusFound)
+}
+
+func (u Users) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	u.Templates.ForgotPassword.Execute(w, r, nil)
+}
+
+func (u Users) ProcessForgotPassword(w http.ResponseWriter, r *http.Request) {
+	email := r.FormValue("email")
+
+	pwReset, err := u.PasswordResetService.Create(email)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	vals := url.Values{
+		"token": {pwReset.Token},
+	}
+	resetURL := "https://www.galaria.com/reset-pw?" + vals.Encode()
+
+	err = u.EmailService.ForgotPassword(email, resetURL)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	u.Templates.CheckYourEmail.Execute(w, r, nil)
 }
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {

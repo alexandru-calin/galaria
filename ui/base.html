@@ -13,13 +13,18 @@
                     <a class="navbar-brand" href="/">Galaria</a>
                     <ul class="navbar-nav">
                         {{if currentUser}}
-                            <li class="nav-item">
-                                <form action="/logout" method="post">
-                                    <div class="d-none">
-                                        {{csrfField}}
-                                    </div>
-                                    <button class="btn btn-secondary">Logout</button>
-                                </form>
+                            <li class="dropdown">
+                                <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                    {{currentUser.Email}}
+                                </button>
+                                <div class="dropdown-menu">
+                                    <form action="/logout" method="post">
+                                        <div class="d-none">
+                                            {{csrfField}}
+                                        </div>
+                                        <button class="dropdown-item">Logout</button>
+                                    </form>
+                                </div>
                             </li>
                         {{else}}
                             <li class="nav-item">

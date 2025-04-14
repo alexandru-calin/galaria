@@ -54,6 +54,10 @@ func (es *EmailService) Send(email Email) error {
 	return nil
 }
 
+func (es *EmailService) ForgotPassword(to, resetURL string) error {
+	return fmt.Errorf("EmailService.ForgotPassword not implemented")
+}
+
 func (es *EmailService) setFrom(msg *mail.Message, email Email) {
 	var from string
 
