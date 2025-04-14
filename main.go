@@ -102,6 +102,7 @@ func main() {
 	usersC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "register.html"))
 	usersC.Templates.Login = views.Must(views.ParseFS(ui.FS, "base.html", "login.html"))
 	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(ui.FS, "base.html", "forgot-password.html"))
+	usersC.Templates.CheckYourEmail = views.Must(views.ParseFS(ui.FS, "base.html", "check-your-email.html"))
 
 	// Setup router and routes
 	r := chi.NewRouter()
