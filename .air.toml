@@ -42,7 +42,7 @@ tmp_dir = "tmp"
   clean_on_exit = true
 
 [proxy]
-  app_port = 4000
+  app_port = 3000
   enabled = true
   proxy_port = 4040
 

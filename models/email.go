@@ -55,7 +55,23 @@ func (es *EmailService) Send(email Email) error {
 }
 
 func (es *EmailService) ForgotPassword(to, resetURL string) error {
-	return fmt.Errorf("EmailService.ForgotPassword not implemented")
+	email := Email{
+		To:        to,
+		Subject:   "Reset your password",
+		Plaintext: "Reset your password by clicking on the link below.\n" + resetURL,
+		HTML: `
+			<p>It looks like you've forgotten your password. No worries! It happens to the best of us.</p>
+			<p>To reset your password, simply click on the link below.</p>
+			<a href="` + resetURL + `">` + resetURL + `</a>
+		`,
+	}
+
+	err := es.Send(email)
+	if err != nil {
+		return fmt.Errorf("forgot password: %w", err)
+	}
+
+	return nil
 }
 
 func (es *EmailService) setFrom(msg *mail.Message, email Email) {
