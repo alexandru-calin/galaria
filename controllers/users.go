@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/alexandru-calin/galaria/context"
+	"github.com/alexandru-calin/galaria/errors"
 	"github.com/alexandru-calin/galaria/models"
 )
 
@@ -43,6 +44,10 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 
 	user, err := u.UserService.Create(data.Email, data.Password)
 	if err != nil {
+		if errors.Is(err, models.ErrEmailTaken) {
+			msg := "This email address is already taken. Please try another."
+			err = errors.Public(err, msg)
+		}
 		u.Templates.New.Execute(w, r, data, err)
 		return
 	}

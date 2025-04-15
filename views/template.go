@@ -9,9 +9,14 @@ import (
 	"net/http"
 
 	"github.com/alexandru-calin/galaria/context"
+	"github.com/alexandru-calin/galaria/errors"
 	"github.com/alexandru-calin/galaria/models"
 	"github.com/gorilla/csrf"
 )
+
+type publicError interface {
+	Public() string
+}
 
 func Must(t Template, err error) Template {
 	if err != nil {
@@ -61,7 +66,7 @@ type Template struct {
 	htmlTpl *template.Template
 }
 
-func (t Template) Execute(w http.ResponseWriter, r *http.Request, data any, errors ...error) {
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data any, errs ...error) {
 	tpl, err := t.htmlTpl.Clone()
 	if err != nil {
 		log.Printf("cloning template: %v", err)
@@ -78,8 +83,13 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data any, erro
 		},
 		"errors": func() []string {
 			var errMessages []string
-			for _, err := range errors {
-				errMessages = append(errMessages, err.Error())
+			for _, err := range errs {
+				var pubErr publicError
+				if errors.As(err, &pubErr) {
+					errMessages = append(errMessages, pubErr.Public())
+				} else {
+					errMessages = append(errMessages, "Something went wrong")
+				}
 			}
 
 			return errMessages

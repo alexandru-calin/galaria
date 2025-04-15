@@ -9,7 +9,7 @@
     <body>
         <header>
             <nav class="navbar navbar-expand border-bottom mb-4">
-                <div class="container-fluid">
+                <div class="container-lg">
                     <a class="navbar-brand" href="/">Galaria</a>
                     <ul class="navbar-nav">
                         {{if currentUser}}
@@ -40,14 +40,6 @@
         </header>
         <main>
             <div class="container">
-                {{if errors}}
-                    {{range errors}}
-                        <div class="alert alert-danger alert-dismissible" role="alert">
-                            {{.}}
-                            <button class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {{end}}
-                {{end}}
                 {{template "main" .}}
             </div>
         </main>
