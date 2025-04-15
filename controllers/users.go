@@ -24,17 +24,26 @@ type Users struct {
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
-	u.Templates.New.Execute(w, r, nil)
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+
+	u.Templates.New.Execute(w, r, data)
 }
 
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {
-	email := r.FormValue("email")
-	password := r.FormValue("password")
+	var data struct {
+		Email    string
+		Password string
+	}
 
-	user, err := u.UserService.Create(email, password)
+	data.Email = r.FormValue("email")
+	data.Password = r.FormValue("password")
+
+	user, err := u.UserService.Create(data.Email, data.Password)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		u.Templates.New.Execute(w, r, data, err)
 		return
 	}
 
