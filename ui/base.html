@@ -17,14 +17,22 @@
                                 <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                                     {{currentUser.Email}}
                                 </button>
-                                <div class="dropdown-menu">
-                                    <form action="/logout" method="post">
-                                        <div class="d-none">
-                                            {{csrfField}}
-                                        </div>
-                                        <button class="dropdown-item">Logout</button>
-                                    </form>
-                                </div>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="/galleries/new">
+                                            New Gallery
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="/logout" method="post">
+                                            <div class="d-none">
+                                                {{csrfField}}
+                                            </div>
+                                            <button class="dropdown-item">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </li>
                         {{else}}
                             <li class="nav-item">

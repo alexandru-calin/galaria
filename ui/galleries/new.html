@@ -1,0 +1,22 @@
+{{define "main"}}
+<h1 class="mb-4">Create a new Gallery</h1>
+<p class="text-muted">
+    Give your gallery a name that represents its theme or content.
+</p>
+<form action="/galleries" method="post">
+    <div class="d-none">
+        {{csrfField}}
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-4">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" id="title" name="text" class="form-control" value="{{.Title}}" autofocus required>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <button type="submit" class="btn btn-primary w-100">Create</button>
+        </div>
+    </div>
+</form>
+{{end}}

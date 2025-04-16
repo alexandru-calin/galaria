@@ -103,11 +103,14 @@ func main() {
 		PasswordResetService: passwordResetService,
 		EmailService:         emailService,
 	}
-	usersC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "register.html"))
-	usersC.Templates.Login = views.Must(views.ParseFS(ui.FS, "base.html", "login.html"))
-	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(ui.FS, "base.html", "forgot-password.html"))
-	usersC.Templates.CheckYourEmail = views.Must(views.ParseFS(ui.FS, "base.html", "check-your-email.html"))
-	usersC.Templates.ResetPassword = views.Must(views.ParseFS(ui.FS, "base.html", "reset-password.html"))
+	usersC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "users/register.html"))
+	usersC.Templates.Login = views.Must(views.ParseFS(ui.FS, "base.html", "users/login.html"))
+	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(ui.FS, "base.html", "users/password-forgot.html"))
+	usersC.Templates.CheckYourEmail = views.Must(views.ParseFS(ui.FS, "base.html", "users/check-your-email.html"))
+	usersC.Templates.ResetPassword = views.Must(views.ParseFS(ui.FS, "base.html", "users/password-reset.html"))
+
+	galleriesC := controllers.Galleries{}
+	galleriesC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/new.html"))
 
 	// Setup router and routes
 	r := chi.NewRouter()
@@ -128,6 +131,12 @@ func main() {
 	r.Route("/users/me", func(r chi.Router) {
 		r.Use(umw.RequireUser)
 		r.Get("/", usersC.CurrentUser)
+	})
+	r.Route("/galleries", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(umw.RequireUser)
+			r.Get("/new", galleriesC.New)
+		})
 	})
 
 	// Start server
