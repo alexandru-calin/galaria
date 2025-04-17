@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"math/rand"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/alexandru-calin/galaria/context"
@@ -55,12 +55,34 @@ func (g Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	type Image struct {
+		GalleryID       int
+		Filename        string
+		FilenameEscaped string
+	}
+
 	var data struct {
-		ID    int
-		Title string
+		ID     int
+		Title  string
+		Images []Image
 	}
 	data.ID = gallery.ID
 	data.Title = gallery.Title
+
+	images, err := g.GalleryService.Images(gallery.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	for _, image := range images {
+		data.Images = append(data.Images, Image{
+			GalleryID:       gallery.ID,
+			Filename:        image.Filename,
+			FilenameEscaped: url.PathEscape(image.Filename),
+		})
+	}
 
 	g.Templates.Edit.Execute(w, r, data)
 }
@@ -89,20 +111,58 @@ func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	type Image struct {
+		GalleryID       int
+		Filename        string
+		FilenameEscaped string
+	}
+
 	var data struct {
 		Title  string
-		Images []string
+		Images []Image
 	}
 	data.Title = gallery.Title
 
-	for i := 0; i < 20; i++ {
-		x, y := rand.Intn(500)+200, rand.Intn(500)+200
+	images, err := g.GalleryService.Images(gallery.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
 
-		imageURL := fmt.Sprintf("https://placecats.com/%d/%d", x, y)
-		data.Images = append(data.Images, imageURL)
+	for _, image := range images {
+		data.Images = append(data.Images, Image{
+			GalleryID:       image.GalleryID,
+			Filename:        image.Filename,
+			FilenameEscaped: url.PathEscape(image.Filename),
+		})
 	}
 
 	g.Templates.Show.Execute(w, r, data)
+}
+
+func (g Galleries) Image(w http.ResponseWriter, r *http.Request) {
+	filename := chi.URLParam(r, "filename")
+
+	galleryID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	image, err := g.GalleryService.Image(galleryID, filename)
+	if err != nil {
+		if errors.Is(err, models.ErrNotFound) {
+			http.NotFound(w, r)
+			return
+		}
+
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	http.ServeFile(w, r, image.Path)
 }
 
 func (g Galleries) Delete(w http.ResponseWriter, r *http.Request) {

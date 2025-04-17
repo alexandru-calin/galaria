@@ -1,12 +1,18 @@
 {{define "main"}}
 <h1 class="mb-4 fw-semibold">{{.Title}}</h1>
-<div class="row g-0 g-md-1">
-    {{range .Images}}
-        <div class="col-4 col-xl-3">
-            <div class="card">
-                <img src="{{.}}" class="card-img object-fit-cover h-100">
+{{if .Images}}
+    <div class="row g-0 g-md-1">
+        {{range .Images}}
+            <div class="col-4 col-xl-3">
+                <a href="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}">
+                    <div class="card overflow-hidden">
+                        <img loading="lazy" src="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}" class="card-img object-fit-cover h-100 zoom">
+                    </div>
+                </a>
             </div>
-        </div>
-    {{end}}
-</div>
+        {{end}}
+    </div>
+{{else}}
+    <p class="text-muted">No images in gallery</p>
+{{end}}
 {{end}}
