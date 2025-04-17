@@ -12,7 +12,7 @@ import (
 )
 
 type User struct {
-	ID           uint
+	ID           int
 	Email        string
 	PasswordHash string
 }
@@ -79,7 +79,7 @@ func (us *UserService) Authenticate(email, password string) (*User, error) {
 	return &user, nil
 }
 
-func (us *UserService) UpdatePassword(userID uint, password string) error {
+func (us *UserService) UpdatePassword(userID int, password string) error {
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return fmt.Errorf("updating password: %w", err)

@@ -14,8 +14,8 @@ const (
 )
 
 type Session struct {
-	ID        uint
-	UserID    uint
+	ID        int
+	UserID    int
 	Token     string
 	TokenHash string
 }
@@ -25,7 +25,7 @@ type SessionService struct {
 	BytesPerToken int
 }
 
-func (ss *SessionService) Create(userID uint) (*Session, error) {
+func (ss *SessionService) Create(userID int) (*Session, error) {
 	bytesPerToken := ss.BytesPerToken
 	if bytesPerToken < MinBytesPerToken {
 		bytesPerToken = MinBytesPerToken

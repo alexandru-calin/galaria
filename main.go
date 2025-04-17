@@ -83,6 +83,9 @@ func main() {
 	passwordResetService := &models.PasswordResetService{
 		DB: db,
 	}
+	galleryService := &models.GalleryService{
+		DB: db,
+	}
 	emailService := models.NewEmailService(cfg.SMTP)
 
 	// Setup middleware
@@ -109,8 +112,13 @@ func main() {
 	usersC.Templates.CheckYourEmail = views.Must(views.ParseFS(ui.FS, "base.html", "users/check-your-email.html"))
 	usersC.Templates.ResetPassword = views.Must(views.ParseFS(ui.FS, "base.html", "users/password-reset.html"))
 
-	galleriesC := controllers.Galleries{}
+	galleriesC := controllers.Galleries{
+		GalleryService: galleryService,
+	}
 	galleriesC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/new.html"))
+	galleriesC.Templates.Edit = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/edit.html"))
+	galleriesC.Templates.Index = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/index.html"))
+	galleriesC.Templates.Show = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/show.html"))
 
 	// Setup router and routes
 	r := chi.NewRouter()
@@ -135,8 +143,13 @@ func main() {
 	r.Route("/galleries", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(umw.RequireUser)
+			r.Get("/", galleriesC.Index)
 			r.Get("/new", galleriesC.New)
+			r.Post("/", galleriesC.Create)
+			r.Get("/{id}/edit", galleriesC.Edit)
+			r.Post("/{id}", galleriesC.Update)
 		})
+		r.Get("/{id}", galleriesC.Show)
 	})
 
 	// Start server
