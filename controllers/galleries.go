@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path/filepath"
 	"strconv"
 
 	"github.com/alexandru-calin/galaria/context"
@@ -142,7 +143,7 @@ func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g Galleries) Image(w http.ResponseWriter, r *http.Request) {
-	filename := chi.URLParam(r, "filename")
+	filename := filepath.Base(chi.URLParam(r, "filename"))
 
 	galleryID, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -166,7 +167,7 @@ func (g Galleries) Image(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g Galleries) DeleteImage(w http.ResponseWriter, r *http.Request) {
-	filename := chi.URLParam(r, "filename")
+	filename := filepath.Base(chi.URLParam(r, "filename"))
 
 	gallery, err := g.galleryByID(w, r, userMustOwnGallery)
 	if err != nil {
