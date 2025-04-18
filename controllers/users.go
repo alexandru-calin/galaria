@@ -73,8 +73,15 @@ func (u Users) ProcessLogin(w http.ResponseWriter, r *http.Request) {
 
 	user, err := u.UserService.Authenticate(email, password)
 	if err != nil {
+		if errors.Is(err, models.ErrNotFound) {
+			w.WriteHeader(http.StatusBadRequest)
+			msg := "Incorrect email or password."
+			err = errors.Public(err, msg)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		fmt.Println(err)
-		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		u.Templates.Login.Execute(w, r, nil, err)
 		return
 	}
 

@@ -68,11 +68,17 @@ func (us *UserService) Authenticate(email, password string) (*User, error) {
 
 	err := row.Scan(&user.ID, &user.PasswordHash)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
 		return nil, fmt.Errorf("authenticating user: %w", err)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return nil, ErrNotFound
+		}
 		return nil, fmt.Errorf("authenticating user: %w", err)
 	}
 

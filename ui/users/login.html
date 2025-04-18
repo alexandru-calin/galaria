@@ -1,5 +1,13 @@
 {{define "main"}}
 <h1 class="mb-4 fw-semibold">Log in to your account</h1>
+{{if errors}}
+    {{range errors}}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            {{.}}
+            <button class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {{end}}
+{{end}}
 <form action="/login" method="post">
     <div class="d-none">
         {{csrfField}}
