@@ -19,6 +19,24 @@
         </div>
     </div>
 </form>
+<form action="/galleries/{{.ID}}/images" method="post" enctype="multipart/form-data">
+    <div class="d-none">
+        {{csrfField}}
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-4">
+            <label for="images" class="form-label">Add images</label>
+            <input type="file" id="images" name="images" class="form-control" accept="image/*" multiple>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <button type="submit" class="btn btn-primary w-100">Upload</button>
+        </div>
+    </div>
+</form>
+
+
 {{if .Images}}
     <div class="row g-1 mb-4">
         {{range .Images}}
