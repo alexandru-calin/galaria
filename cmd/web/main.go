@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -66,21 +67,28 @@ func main() {
 		panic(err)
 	}
 
+	err = run(cfg)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func run(cfg config) error {
 	// Setup database
 	db, err := models.Open(cfg.PSQL)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// Setup services
@@ -137,9 +145,9 @@ func main() {
 	r.Use(umw.SetUser)
 
 	assetsHandler := http.FileServer(http.Dir("assets"))
-	r.Get("/assets/*", http.StripPrefix("/assets", assetsHandler).ServeHTTP)
 
 	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(ui.FS, "base.html", "home.html"))))
+	r.Get("/assets/*", http.StripPrefix("/assets", assetsHandler).ServeHTTP)
 	r.Get("/register", usersC.New)
 	r.Post("/users", usersC.Create)
 	r.Get("/login", usersC.Login)
@@ -149,11 +157,9 @@ func main() {
 	r.Post("/forgot-password", usersC.ProcessForgotPassword)
 	r.Get("/reset-password", usersC.ResetPassword)
 	r.Post("/reset-password", usersC.ProcessResetPassword)
-	r.Route("/users/me", func(r chi.Router) {
-		r.Use(umw.RequireUser)
-		r.Get("/", usersC.CurrentUser)
-	})
 	r.Route("/galleries", func(r chi.Router) {
+		r.Get("/{id}", galleriesC.Show)
+		r.Get("/{id}/images/{filename}", galleriesC.Image)
 		r.Group(func(r chi.Router) {
 			r.Use(umw.RequireUser)
 			r.Get("/", galleriesC.Index)
@@ -165,13 +171,9 @@ func main() {
 			r.Post("/{id}/delete", galleriesC.Delete)
 			r.Post("/{id}/images/{filename}/delete", galleriesC.DeleteImage)
 		})
-		r.Get("/{id}", galleriesC.Show)
-		r.Get("/{id}/images/{filename}", galleriesC.Image)
 	})
 
 	// Start server
-	err = http.ListenAndServe(cfg.Server.Address, r)
-	if err != nil {
-		panic(err)
-	}
+	fmt.Printf("Starting the server on %s\n", cfg.Server.Address)
+	return http.ListenAndServe(cfg.Server.Address, r)
 }
