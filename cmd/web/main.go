@@ -136,6 +136,9 @@ func main() {
 	r.Use(csrfMw)
 	r.Use(umw.SetUser)
 
+	assetsHandler := http.FileServer(http.Dir("assets"))
+	r.Get("/assets/*", http.StripPrefix("/assets", assetsHandler).ServeHTTP)
+
 	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(ui.FS, "base.html", "home.html"))))
 	r.Get("/register", usersC.New)
 	r.Post("/users", usersC.Create)
