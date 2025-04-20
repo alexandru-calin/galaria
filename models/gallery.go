@@ -125,6 +125,11 @@ func (gs *GalleryService) Delete(id int) error {
 		return fmt.Errorf("deleting gallery: %w", err)
 	}
 
+	err = os.RemoveAll(gs.galleryDir(id))
+	if err != nil {
+		return fmt.Errorf("deleting gallery images: %w", err)
+	}
+
 	return nil
 }
 
