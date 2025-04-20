@@ -102,8 +102,8 @@ func (g Galleries) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
-	http.Redirect(w, r, editPath, http.StatusFound)
+	galleryPath := fmt.Sprintf("/galleries/%d", gallery.ID)
+	http.Redirect(w, r, galleryPath, http.StatusFound)
 }
 
 func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
