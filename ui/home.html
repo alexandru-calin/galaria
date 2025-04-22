@@ -1,3 +1,23 @@
 {{define "main"}}
-<h1>Home</h1>
+<div class="row align-items-center g-4">
+    <div class="col-12 col-sm-8">
+        <h1 class="mb-3 fw-semibold">
+            Create a Gallery in Seconds
+        </h1>
+        <h2 class="mb-5">
+            Build beautiful image galleries and browse inspiring ones — all in one place
+        </h2>
+        <div class="d-flex gap-2">
+            <a href="/galleries/new" class="btn btn-primary">
+                Create a Gallery
+            </a>
+            <a href="/galleries" class="btn btn-outline-primary">
+                Browse Galleries
+            </a>
+        </div>
+    </div>
+    <div class="col-12 col-sm-4">
+        <img src="/assets/hero.jpg" class="img-fluid">
+    </div>
+</div>
 {{end}}

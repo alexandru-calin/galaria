@@ -22,14 +22,15 @@
     display: block;
 }
 
-.zoom {
-    transition: transform 0.3s ease;
+.card-img {
+    transition: filter 0.3s ease;
 }
 
-.zoom:hover {
-    transform: scale(1.1);
+.card-img:hover {
+    filter: brightness(0.7);
 }
 
+/*
 .card {
     height: 150px;
 }
@@ -45,3 +46,4 @@
         height: 450px;
     }
 }
+*/
