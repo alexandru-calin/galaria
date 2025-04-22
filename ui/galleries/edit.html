@@ -1,6 +1,6 @@
 {{define "main"}}
-<h1 class="mb-4 fw-semibold">Edit your Gallery</h1>
-<p class="text-muted">
+<h1 class="mb-3 fw-semibold">Edit your Gallery</h1>
+<p class="text-muted mb-4">
     Personalize your gallery by uploading new images, or deleting outdated ones.
 </p>
 <form action="/galleries/{{.ID}}" method="post">
@@ -8,44 +8,38 @@
     <div class="row mb-3">
         <div class="col-lg-4">
             <label for="title" class="form-label">Title</label>
-            <input type="text" id="title" name="title" class="form-control" value="{{.Title}}" required>
-        </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-lg-4">
-            <button type="submit" class="btn btn-primary w-100">Save</button>
+            <div class="d-flex gap-2">
+                <input type="text" id="title" name="title" class="form-control" value="{{.Title}}" required>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         </div>
     </div>
 </form>
 <form action="/galleries/{{.ID}}/images" method="post" enctype="multipart/form-data">
     {{csrfField}}
-    <div class="row mb-3">
+    <div class="row mb-5">
         <div class="col-lg-4">
             <label for="images" class="form-label">Add images</label>
-            <input type="file" id="images" name="images" class="form-control" accept="image/*" multiple>
-        </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-lg-4">
-            <button type="submit" class="btn btn-primary w-100">Upload</button>
+            <div class="d-flex gap-2">
+                <input type="file" id="images" name="images" class="form-control" accept="image/*" multiple>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
         </div>
     </div>
 </form>
 {{if .Images}}
     <div class="row g-1 mb-4">
         {{range .Images}}
-            <div class="col-4 col-sm-3 col-xl-2">
-                <div class="image-container">
-                    <img loading="lazy" src="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}" class="object-fit-cover w-100" style="height: 150px;">
-                    <form
-                        action="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}/delete"
-                        method="post"
-                        onsubmit="return confirm('Are you sure you want to delete this image?');"
-                    >
-                        {{csrfField}}
-                        <button type="submit" class="btn btn-lg btn-danger">Delete</button>
-                    </form>
-                </div>
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 position-relative">
+                <img loading="lazy" src="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}" class="w-100 h-100 object-fit-cover">
+                <form
+                    action="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}/delete"
+                    method="post"
+                    onsubmit="return confirm('Are you sure you want to delete this image?');"
+                >
+                    {{csrfField}}
+                    <button type="submit" class="btn btn-danger position-absolute top-0 end-0 mt-1 me-2">Delete</button>
+                </form>
             </div>
         {{end}}
     </div>
