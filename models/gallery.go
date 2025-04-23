@@ -59,6 +59,35 @@ func (gs *GalleryService) Create(userID int, title string) (*Gallery, error) {
 	return &gallery, nil
 }
 
+func (gs *GalleryService) All() ([]Gallery, error) {
+	rows, err := gs.DB.Query(`
+		SELECT id, title, created_at, updated_at FROM galleries ORDER BY created_at DESC`)
+
+	if err != nil {
+		return nil, fmt.Errorf("retrieving all galleries: %w", err)
+	}
+
+	var galleries []Gallery
+
+	for rows.Next() {
+		var gallery Gallery
+
+		err = rows.Scan(&gallery.ID, &gallery.Title, &gallery.CreatedAt, &gallery.UpdatedAt)
+		if err != nil {
+			return nil, fmt.Errorf("retrieving all galleries: %w", err)
+		}
+
+		galleries = append(galleries, gallery)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, fmt.Errorf("retrieving all galleries: %w", err)
+	}
+
+	return galleries, nil
+}
+
 func (gs *GalleryService) ByID(id int) (*Gallery, error) {
 	gallery := Gallery{
 		ID: id,

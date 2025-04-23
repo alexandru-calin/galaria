@@ -137,6 +137,7 @@ func run(cfg config) error {
 	galleriesC.Templates.Edit = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/edit.html"))
 	galleriesC.Templates.Index = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/index.html"))
 	galleriesC.Templates.Show = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/show.html"))
+	galleriesC.Templates.All = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/all.html"))
 
 	// Setup router and routes
 	r := chi.NewRouter()
@@ -160,6 +161,7 @@ func run(cfg config) error {
 	r.Post("/reset-password", usersC.ProcessResetPassword)
 	r.Post("/change-theme", usersC.ChangeTheme)
 	r.Route("/galleries", func(r chi.Router) {
+		r.Get("/all", galleriesC.All)
 		r.Get("/{id}", galleriesC.Show)
 		r.Get("/{id}/images/{filename}", galleriesC.Image)
 		r.Group(func(r chi.Router) {

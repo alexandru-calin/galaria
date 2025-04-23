@@ -1,4 +1,11 @@
 {{define "main"}}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item"><a href="/galleries/all">Galleries</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{.Title}}</li>
+    </ol>
+</nav>
 <h1 class="mb-4 fw-semibold text-break">{{.Title}}</h1>
 {{if .Images}}
 <p class="text-muted mb-3">Last updated: <span>{{.UpdatedAt}}</span></p>
