@@ -1,17 +1,27 @@
 {{define "main"}}
-<h1 class="mb-4 fw-semibold">My Galleries</h1>
-<a href="/galleries/new" class="btn btn-primary mb-3">New Gallery</a>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">My Galleries</li>
+    </ol>
+</nav>
 <table class="table table-hover">
     <thead>
         <tr>
             <th scope="col">Title</th>
+            <th scope="col">Created At</th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
     <tbody>
         {{range .Galleries}}
             <tr>
-                <td class="position-relative"><a href="/galleries/{{.ID}}" title="{{.Title}}" class="text-break stretched-link link-underline link-underline-opacity-0">{{.Title}}</a></td>
+                <td class="position-relative">
+                    <a href="/galleries/{{.ID}}" title="{{.Title}}" class="text-break stretched-link text-decoration-none">{{.Title}}</a>
+                </td>
+                <td>
+                    {{.CreatedAt}}
+                </td>
                 <td>
                     <div class="d-flex gap-2 align-items-center">
                         <a href="/galleries/{{.ID}}/edit" class="btn btn-secondary btn-sm">Edit</a>
@@ -29,4 +39,5 @@
         {{end}}
     </tbody>
 </table>
+<a href="/galleries/new" class="btn btn-primary">Create Gallery</a>
 {{end}}

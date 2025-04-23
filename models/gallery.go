@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"io"
 	"io/fs"
+	"sort"
+	"syscall"
+	"time"
 
 	"fmt"
 	"os"
@@ -21,12 +24,15 @@ type Image struct {
 	GalleryID int
 	Path      string
 	Filename  string
+	CreatedAt time.Time
 }
 
 type Gallery struct {
-	ID     int
-	UserID int
-	Title  string
+	ID        int
+	UserID    int
+	Title     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type GalleryService struct {
@@ -43,9 +49,9 @@ func (gs *GalleryService) Create(userID int, title string) (*Gallery, error) {
 	row := gs.DB.QueryRow(`
 		INSERT INTO galleries (user_id, title)
 		VALUES ($1, $2)
-		RETURNING id`, gallery.UserID, gallery.Title)
+		RETURNING id, created_at`, gallery.UserID, gallery.Title)
 
-	err := row.Scan(&gallery.ID)
+	err := row.Scan(&gallery.ID, &gallery.CreatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("creating gallery: %w", err)
 	}
@@ -59,9 +65,9 @@ func (gs *GalleryService) ByID(id int) (*Gallery, error) {
 	}
 
 	row := gs.DB.QueryRow(`
-		SELECT user_id, title FROM galleries WHERE id=$1`, gallery.ID)
+		SELECT user_id, title, created_at, updated_at FROM galleries WHERE id=$1`, gallery.ID)
 
-	err := row.Scan(&gallery.UserID, &gallery.Title)
+	err := row.Scan(&gallery.UserID, &gallery.Title, &gallery.CreatedAt, &gallery.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotFound
@@ -75,7 +81,7 @@ func (gs *GalleryService) ByID(id int) (*Gallery, error) {
 
 func (gs *GalleryService) ByUserID(userID int) ([]Gallery, error) {
 	rows, err := gs.DB.Query(`
-		SELECT id, title FROM galleries WHERE user_id=$1`, userID)
+		SELECT id, title, created_at FROM galleries WHERE user_id=$1 ORDER BY created_at DESC`, userID)
 
 	if err != nil {
 		return nil, fmt.Errorf("query galleries by user: %w", err)
@@ -88,7 +94,7 @@ func (gs *GalleryService) ByUserID(userID int) ([]Gallery, error) {
 			UserID: userID,
 		}
 
-		err := rows.Scan(&gallery.ID, &gallery.Title)
+		err := rows.Scan(&gallery.ID, &gallery.Title, &gallery.CreatedAt)
 		if err != nil {
 			return nil, fmt.Errorf("query galleries by user: %w", err)
 		}
@@ -107,8 +113,8 @@ func (gs *GalleryService) ByUserID(userID int) ([]Gallery, error) {
 func (gs *GalleryService) Update(gallery *Gallery) error {
 	_, err := gs.DB.Exec(`
 		UPDATE galleries
-		SET title=$2
-		WHERE id=$1`, gallery.ID, gallery.Title)
+		SET title=$2, updated_at=$3
+		WHERE id=$1`, gallery.ID, gallery.Title, time.Now())
 
 	if err != nil {
 		return fmt.Errorf("updating gallery: %w", err)
@@ -144,13 +150,28 @@ func (gs *GalleryService) Images(galleryID int) ([]Image, error) {
 	var images []Image
 	for _, file := range files {
 		if hasExtension(file, gs.extensions()) {
+			fileInfo, err := os.Stat(file)
+			if err != nil {
+				return nil, fmt.Errorf("getting images info: %w", err)
+			}
+
+			stat, ok := fileInfo.Sys().(*syscall.Stat_t)
+			if !ok {
+				return nil, fmt.Errorf("getting image info: %w", err)
+			}
+
 			images = append(images, Image{
 				GalleryID: galleryID,
 				Path:      file,
 				Filename:  filepath.Base(file),
+				CreatedAt: time.Unix(stat.Ctim.Sec, stat.Ctim.Nsec),
 			})
 		}
 	}
+
+	sort.SliceStable(images, func(i, j int) bool {
+		return images[i].CreatedAt.After(images[j].CreatedAt)
+	})
 
 	return images, nil
 }

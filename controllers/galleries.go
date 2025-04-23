@@ -63,12 +63,14 @@ func (g Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data struct {
-		ID     int
-		Title  string
-		Images []Image
+		ID        int
+		Title     string
+		Images    []Image
+		UpdatedAt string
 	}
 	data.ID = gallery.ID
 	data.Title = gallery.Title
+	data.UpdatedAt = gallery.UpdatedAt.Format("Monday, January 02, 2006 15:04")
 
 	images, err := g.GalleryService.Images(gallery.ID)
 	if err != nil {
@@ -102,8 +104,8 @@ func (g Galleries) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	galleryPath := fmt.Sprintf("/galleries/%d", gallery.ID)
-	http.Redirect(w, r, galleryPath, http.StatusFound)
+	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
+	http.Redirect(w, r, editPath, http.StatusFound)
 }
 
 func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
@@ -116,13 +118,16 @@ func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
 		GalleryID       int
 		Filename        string
 		FilenameEscaped string
+		CreatedAt       string
 	}
 
 	var data struct {
-		Title  string
-		Images []Image
+		Title     string
+		Images    []Image
+		UpdatedAt string
 	}
 	data.Title = gallery.Title
+	data.UpdatedAt = gallery.UpdatedAt.Format("Monday, January 02, 2006 15:04")
 
 	images, err := g.GalleryService.Images(gallery.ID)
 	if err != nil {
@@ -136,6 +141,7 @@ func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
 			GalleryID:       image.GalleryID,
 			Filename:        image.Filename,
 			FilenameEscaped: url.PathEscape(image.Filename),
+			CreatedAt:       image.CreatedAt.Format("Jan 02, 2006 15:04"),
 		})
 	}
 
@@ -204,6 +210,13 @@ func (g Galleries) UploadImage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	err = g.GalleryService.Update(gallery)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
 	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
 	http.Redirect(w, r, editPath, http.StatusFound)
 }
@@ -217,6 +230,13 @@ func (g Galleries) DeleteImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = g.GalleryService.DeleteImage(gallery.ID, filename)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	err = g.GalleryService.Update(gallery)
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
@@ -244,8 +264,9 @@ func (g Galleries) Delete(w http.ResponseWriter, r *http.Request) {
 
 func (g Galleries) Index(w http.ResponseWriter, r *http.Request) {
 	type Gallery struct {
-		ID    int
-		Title string
+		ID        int
+		Title     string
+		CreatedAt string
 	}
 	var data struct {
 		Galleries []Gallery
@@ -261,8 +282,9 @@ func (g Galleries) Index(w http.ResponseWriter, r *http.Request) {
 
 	for _, gallery := range galleries {
 		data.Galleries = append(data.Galleries, Gallery{
-			ID:    gallery.ID,
-			Title: gallery.Title,
+			ID:        gallery.ID,
+			Title:     gallery.Title,
+			CreatedAt: gallery.CreatedAt.Format("Jan 02, 2006 15:04"),
 		})
 	}
 

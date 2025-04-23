@@ -1,7 +1,7 @@
-.img--darken {
+.card img {
     transition: filter 0.3s ease;
 }
 
-.img--darken:hover {
-    filter: brightness(0.6);
+.card:hover img {
+    filter: brightness(0.8);
 }

@@ -1,6 +1,14 @@
 {{define "main"}}
-<h1 class="mb-3 fw-semibold">Edit your Gallery</h1>
-<p class="text-muted mb-4">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item"><a href="/galleries">My Galleries</a></li>
+      <li class="breadcrumb-item active"><a href="/galleries/{{.ID}}">{{.Title}}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Edit</li>
+    </ol>
+</nav>
+<h1 class="mb-4 fw-semibold">Edit your Gallery</h1>
+<p class="text-muted">
     Personalize your gallery by uploading new images, or deleting outdated ones.
 </p>
 <form action="/galleries/{{.ID}}" method="post">
@@ -10,24 +18,23 @@
             <label for="title" class="form-label">Title</label>
             <div class="d-flex gap-2">
                 <input type="text" id="title" name="title" class="form-control" value="{{.Title}}" required>
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn btn-primary">Update</button>
             </div>
         </div>
     </div>
 </form>
 <form action="/galleries/{{.ID}}/images" method="post" enctype="multipart/form-data">
     {{csrfField}}
-    <div class="row mb-5">
+    <div class="row mb-3">
         <div class="col-lg-4">
             <label for="images" class="form-label">Add images</label>
-            <div class="d-flex gap-2">
-                <input type="file" id="images" name="images" class="form-control" accept="image/*" multiple>
-                <button type="submit" class="btn btn-primary">Upload</button>
-            </div>
+            <input type="file" id="images" name="images" class="form-control" accept="image/*" multiple>
         </div>
     </div>
+    <button type="submit" class="btn btn-primary mb-5">Upload</button>
 </form>
 {{if .Images}}
+    <p class="text-muted mb-3">Last updated at: <span>{{.UpdatedAt}}</span></p>
     <div class="row g-1 mb-4">
         {{range .Images}}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 position-relative" style="height: 150px;">
@@ -44,7 +51,7 @@
         {{end}}
     </div>
 {{else}}
-    <p class="text-muted">No images in gallery</p>
+    <p class="text-muted mb-4">No images in gallery</p>
 {{end}}
 <h2 class="mb-3 fw-semibold">Dangerous actions</h2>
 <form
