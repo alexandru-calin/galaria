@@ -9,7 +9,8 @@ import (
 type key string
 
 const (
-	userKey key = "user"
+	userKey  key = "user"
+	themeKey key = "theme"
 )
 
 func WithUser(ctx context.Context, user *models.User) context.Context {
@@ -25,4 +26,19 @@ func User(ctx context.Context) *models.User {
 	}
 
 	return user
+}
+
+func WithTheme(ctx context.Context, theme string) context.Context {
+	return context.WithValue(ctx, themeKey, theme)
+}
+
+func Theme(ctx context.Context) string {
+	val := ctx.Value(themeKey)
+
+	theme, ok := val.(string)
+	if !ok {
+		return ""
+	}
+
+	return theme
 }

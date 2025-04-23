@@ -43,6 +43,9 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 		"isCurrentPath": func() error {
 			return fmt.Errorf("isCurrentPath not implemented")
 		},
+		"currentTheme": func() error {
+			return fmt.Errorf("currentTheme not implemented")
+		},
 	})
 
 	tpl, err := tpl.ParseFS(fs, patterns...)
@@ -101,6 +104,9 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data any, errs
 		"isCurrentPath": func(s string) bool {
 			path := r.URL.Path
 			return strings.Contains(path, s)
+		},
+		"currentTheme": func() string {
+			return context.Theme(r.Context())
 		},
 	})
 

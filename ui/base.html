@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="{{currentTheme}}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Galaria</title>
         <link rel="stylesheet" href="/assets/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/bootstrap-icons.min.css">
         <link rel="stylesheet" href="/assets/styles.css">
     </head>
     <body>
@@ -14,7 +15,7 @@
                     <a class="navbar-brand" href="/">Galaria</a>
                     <ul class="navbar-nav">
                         {{if currentUser}}
-                            <li class="dropdown">
+                            <li class="nav-item dropdown">
                                 <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                                     {{currentUser.Email}}
                                 </button>
@@ -39,6 +40,35 @@
                                 <a href="/register" class='nav-link {{if isCurrentPath "register"}}active{{end}}'>Register</a>
                             </li>
                         {{end}}
+                        <li class="nav-item dropdown">
+                            <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                {{if eq currentTheme "dark"}}
+                                    <i class="bi bi-moon"></i>
+                                {{else if eq currentTheme "light"}}
+                                    <i class="bi bi-sun"></i>
+                                {{end}}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <form action="/change-theme" method="post">
+                                        {{csrfField}}
+                                        <input type="hidden" name="theme" value="dark">
+                                        <button class='dropdown-item {{if eq currentTheme "dark"}}active{{end}}'>
+                                            <i class="bi bi-moon"></i>
+                                            Dark
+                                        </button>
+                                    </form>
+                                    <form action="/change-theme" method="post">
+                                        {{csrfField}}
+                                        <input type="hidden" name="theme" value="light">
+                                        <button class='dropdown-item {{if eq currentTheme "light"}}active{{end}}'>
+                                            <i class="bi bi-sun"></i>
+                                            Light
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </nav>

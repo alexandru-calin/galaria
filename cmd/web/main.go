@@ -142,6 +142,7 @@ func run(cfg config) error {
 	r := chi.NewRouter()
 
 	r.Use(csrfMw)
+	r.Use(umw.SetTheme)
 	r.Use(umw.SetUser)
 
 	assetsHandler := http.FileServer(http.Dir("assets"))
@@ -157,6 +158,7 @@ func run(cfg config) error {
 	r.Post("/forgot-password", usersC.ProcessForgotPassword)
 	r.Get("/reset-password", usersC.ResetPassword)
 	r.Post("/reset-password", usersC.ProcessResetPassword)
+	r.Post("/change-theme", usersC.ChangeTheme)
 	r.Route("/galleries", func(r chi.Router) {
 		r.Get("/{id}", galleriesC.Show)
 		r.Get("/{id}/images/{filename}", galleriesC.Image)

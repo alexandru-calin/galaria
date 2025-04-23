@@ -186,6 +186,13 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Current user: %s\n", user.Email)
 }
 
+func (u Users) ChangeTheme(w http.ResponseWriter, r *http.Request) {
+	theme := r.FormValue("theme")
+	setCookie(w, CookieTheme, theme)
+
+	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
+}
+
 type UserMiddleware struct {
 	SessionService *models.SessionService
 }
@@ -219,6 +226,21 @@ func (umw UserMiddleware) RequireUser(next http.Handler) http.Handler {
 			return
 		}
 
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (umw UserMiddleware) SetTheme(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		theme, err := readCookie(r, CookieTheme)
+		if err != nil {
+			theme = "dark"
+			setCookie(w, CookieTheme, theme)
+		}
+
+		ctx := r.Context()
+		ctx = context.WithTheme(ctx, theme)
+		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
 }
