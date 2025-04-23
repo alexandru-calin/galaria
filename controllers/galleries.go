@@ -46,6 +46,8 @@ func (g Galleries) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setCookie(w, CookieFlash, "Gallery created successfully")
+
 	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
 	http.Redirect(w, r, editPath, http.StatusFound)
 }
@@ -67,10 +69,11 @@ func (g Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 		Title     string
 		Images    []Image
 		UpdatedAt string
+		Flash     string
 	}
 	data.ID = gallery.ID
 	data.Title = gallery.Title
-	data.UpdatedAt = gallery.UpdatedAt.Format("Monday, January 02, 2006 15:04")
+	data.UpdatedAt = gallery.UpdatedAt.Format("January 02, 2006 15:04")
 
 	images, err := g.GalleryService.Images(gallery.ID)
 	if err != nil {
@@ -86,6 +89,20 @@ func (g Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 			FilenameEscaped: url.PathEscape(image.Filename),
 		})
 	}
+
+	flash, err := readCookie(r, CookieFlash)
+	if err != nil {
+		if !errors.Is(err, http.ErrNoCookie) {
+			fmt.Println(err)
+			http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+			return
+		}
+		g.Templates.Edit.Execute(w, r, data)
+		return
+	}
+
+	data.Flash = flash
+	deleteCookie(w, CookieFlash)
 
 	g.Templates.Edit.Execute(w, r, data)
 }
@@ -103,6 +120,8 @@ func (g Galleries) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
 		return
 	}
+
+	setCookie(w, CookieFlash, "Gallery updated successfully")
 
 	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
 	http.Redirect(w, r, editPath, http.StatusFound)
@@ -127,7 +146,7 @@ func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt string
 	}
 	data.Title = gallery.Title
-	data.UpdatedAt = gallery.UpdatedAt.Format("Monday, January 02, 2006 15:04")
+	data.UpdatedAt = gallery.UpdatedAt.Format("January 02, 2006 15:04")
 
 	images, err := g.GalleryService.Images(gallery.ID)
 	if err != nil {
@@ -217,6 +236,8 @@ func (g Galleries) UploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setCookie(w, CookieFlash, "Gallery updated successfully")
+
 	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
 	http.Redirect(w, r, editPath, http.StatusFound)
 }
@@ -243,6 +264,8 @@ func (g Galleries) DeleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setCookie(w, CookieFlash, "Gallery updated successfully")
+
 	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
 	http.Redirect(w, r, editPath, http.StatusFound)
 }
@@ -259,6 +282,8 @@ func (g Galleries) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setCookie(w, CookieFlash, "Gallery deleted successfully")
+
 	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
@@ -270,6 +295,7 @@ func (g Galleries) Index(w http.ResponseWriter, r *http.Request) {
 	}
 	var data struct {
 		Galleries []Gallery
+		Flash     string
 	}
 
 	user := context.User(r.Context())
@@ -287,6 +313,20 @@ func (g Galleries) Index(w http.ResponseWriter, r *http.Request) {
 			CreatedAt: gallery.CreatedAt.Format("Jan 02, 2006 15:04"),
 		})
 	}
+
+	flash, err := readCookie(r, CookieFlash)
+	if err != nil {
+		if !errors.Is(err, http.ErrNoCookie) {
+			fmt.Println(err)
+			http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+			return
+		}
+		g.Templates.Index.Execute(w, r, data)
+		return
+	}
+
+	data.Flash = flash
+	deleteCookie(w, CookieFlash)
 
 	g.Templates.Index.Execute(w, r, data)
 }

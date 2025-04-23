@@ -5,7 +5,13 @@
       <li class="breadcrumb-item active" aria-current="page">My Galleries</li>
     </ol>
 </nav>
-<table class="table table-hover">
+{{if .Flash}}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        {{.Flash}}
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+{{end}}
+<table class="table table-hover table-sm">
     <thead>
         <tr>
             <th scope="col">Title</th>

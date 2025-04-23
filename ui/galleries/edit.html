@@ -8,6 +8,12 @@
     </ol>
 </nav>
 <h1 class="mb-4 fw-semibold">Edit your Gallery</h1>
+{{if .Flash}}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        {{.Flash}}
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+{{end}}
 <p class="text-muted">
     Personalize your gallery by uploading new images, or deleting outdated ones.
 </p>
@@ -18,23 +24,25 @@
             <label for="title" class="form-label">Title</label>
             <div class="d-flex gap-2">
                 <input type="text" id="title" name="title" class="form-control" value="{{.Title}}" required>
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn btn-primary">Change</button>
             </div>
         </div>
     </div>
 </form>
 <form action="/galleries/{{.ID}}/images" method="post" enctype="multipart/form-data">
     {{csrfField}}
-    <div class="row mb-3">
+    <div class="row mb-4">
         <div class="col-lg-4">
             <label for="images" class="form-label">Add images</label>
-            <input type="file" id="images" name="images" class="form-control" accept="image/*" multiple>
+            <div class="d-flex gap-2 align-items-start">
+                <input type="file" id="images" name="images" class="form-control" accept="image/*" multiple>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mb-5">Upload</button>
 </form>
 {{if .Images}}
-    <p class="text-muted mb-3">Last updated at: <span>{{.UpdatedAt}}</span></p>
+    <p class="text-muted mb-3">Last updated: <span>{{.UpdatedAt}}</span></p>
     <div class="row g-1 mb-4">
         {{range .Images}}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 position-relative" style="height: 150px;">

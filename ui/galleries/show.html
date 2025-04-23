@@ -1,12 +1,12 @@
 {{define "main"}}
 <h1 class="mb-4 fw-semibold text-break">{{.Title}}</h1>
 {{if .Images}}
-<p class="text-muted mb-3">Last updated at: <span>{{.UpdatedAt}}</span></p>
+<p class="text-muted mb-3">Last updated: <span>{{.UpdatedAt}}</span></p>
     <div class="row g-1">
         {{range .Images}}
             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <a href="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}" title="{{.FilenameEscaped}}" class="text-decoration-none">
-                    <div class="card text-end">
+                    <div class="card text-end border-0">
                         <img loading="lazy" src="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}" class="w-100 object-fit-cover card-img-top" height="250">
                         <p class="card-text p-1">{{.CreatedAt}}</p>
                     </div>

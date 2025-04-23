@@ -59,12 +59,34 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	flash := fmt.Sprintf("Successfully registered and logged in as %s", data.Email)
+
 	setCookie(w, CookieSession, session.Token)
+	setCookie(w, CookieFlash, flash)
+
 	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
 func (u Users) Login(w http.ResponseWriter, r *http.Request) {
-	u.Templates.Login.Execute(w, r, nil)
+	flash, err := readCookie(r, CookieFlash)
+	if err != nil {
+		if !errors.Is(err, http.ErrNoCookie) {
+			fmt.Println(err)
+			http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+			return
+		}
+		u.Templates.Login.Execute(w, r, nil)
+		return
+	}
+
+	var data struct {
+		Flash string
+	}
+
+	data.Flash = flash
+	deleteCookie(w, CookieFlash)
+
+	u.Templates.Login.Execute(w, r, data)
 }
 
 func (u Users) ProcessLogin(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +114,10 @@ func (u Users) ProcessLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	flash := fmt.Sprintf("Successfully logged in as %s", email)
+
 	setCookie(w, CookieSession, session.Token)
+	setCookie(w, CookieFlash, flash)
 	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
@@ -110,6 +135,7 @@ func (u Users) ProcessLogout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setCookie(w, CookieFlash, "Logged out successfully")
 	deleteCookie(w, CookieSession)
 	http.Redirect(w, r, "/login", http.StatusFound)
 }
