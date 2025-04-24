@@ -46,6 +46,9 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 		"currentTheme": func() error {
 			return fmt.Errorf("currentTheme not implemented")
 		},
+		"toggleSortOrder": func() error {
+			return fmt.Errorf("toggleSortOrder not implemented")
+		},
 	})
 
 	tpl, err := tpl.ParseFS(fs, patterns...)
@@ -107,6 +110,15 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data any, errs
 		},
 		"currentTheme": func() string {
 			return context.Theme(r.Context())
+		},
+		"toggleSortOrder": func(sort, order, column string) string {
+			if sort == column {
+				if order == "asc" {
+					return "desc"
+				}
+				return "asc"
+			}
+			return "asc"
 		},
 	})
 

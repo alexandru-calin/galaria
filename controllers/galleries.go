@@ -55,8 +55,8 @@ func (g Galleries) All(w http.ResponseWriter, r *http.Request) {
 		data.Galleries = append(data.Galleries, Gallery{
 			ID:        gallery.ID,
 			Title:     gallery.Title,
-			CreatedAt: gallery.CreatedAt.Format("Jan 02, 15:04"),
-			UpdatedAt: gallery.UpdatedAt.Format("Jan 02, 15:04"),
+			CreatedAt: gallery.CreatedAt.Format("January 02, 2006 15:04"),
+			UpdatedAt: gallery.UpdatedAt.Format("January 02, 2006 15:04"),
 		})
 	}
 
@@ -191,7 +191,7 @@ func (g Galleries) Show(w http.ResponseWriter, r *http.Request) {
 			GalleryID:       image.GalleryID,
 			Filename:        image.Filename,
 			FilenameEscaped: url.PathEscape(image.Filename),
-			CreatedAt:       image.CreatedAt.Format("Jan 02, 2006 15:04"),
+			CreatedAt:       image.CreatedAt.Format("January 02, 2006 15:04"),
 		})
 	}
 
@@ -327,11 +327,23 @@ func (g Galleries) Index(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Galleries []Gallery
 		Flash     string
+		Sort      string
+		Order     string
+	}
+
+	sort := r.FormValue("s")
+	if sort == "" {
+		sort = "created_at"
+	}
+
+	order := r.FormValue("o")
+	if order == "" {
+		order = "desc"
 	}
 
 	user := context.User(r.Context())
 
-	galleries, err := g.GalleryService.ByUserID(user.ID)
+	galleries, err := g.GalleryService.ByUserID(user.ID, sort, order)
 	if err != nil {
 		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
 		return
@@ -341,7 +353,7 @@ func (g Galleries) Index(w http.ResponseWriter, r *http.Request) {
 		data.Galleries = append(data.Galleries, Gallery{
 			ID:        gallery.ID,
 			Title:     gallery.Title,
-			CreatedAt: gallery.CreatedAt.Format("Jan 02, 2006 15:04"),
+			CreatedAt: gallery.CreatedAt.Format("01-02-2006 15:04"),
 		})
 	}
 
@@ -352,12 +364,13 @@ func (g Galleries) Index(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
 			return
 		}
-		g.Templates.Index.Execute(w, r, data)
-		return
 	}
 
 	data.Flash = flash
 	deleteCookie(w, CookieFlash)
+
+	data.Order = order
+	data.Sort = sort
 
 	g.Templates.Index.Execute(w, r, data)
 }

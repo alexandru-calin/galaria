@@ -5,6 +5,7 @@
       <li class="breadcrumb-item active" aria-current="page">My Galleries</li>
     </ol>
 </nav>
+<h1 class="mb-4 fw-semibold">My Galleries</h1>
 {{if .Flash}}
     <div class="alert alert-success alert-dismissible" role="alert">
         {{.Flash}}
@@ -14,8 +15,32 @@
 <table class="table table-hover table-sm">
     <thead>
         <tr>
-            <th scope="col">Title</th>
-            <th scope="col">Created At</th>
+            <th scope="col">
+                <a href='?s=title&o={{ toggleSortOrder .Sort .Order "title" }}'
+                class="text-decoration-none link-body-emphasis">
+                    Name
+                    {{if eq .Sort "title"}}
+                        {{if eq .Order "asc"}}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {{else if eq .Order "desc"}}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {{end}}
+                    {{end}}
+                </a>
+            </th>
+            <th scope="col">
+                <a href='?s=created_at&o={{ toggleSortOrder .Sort .Order "created_at" }}'
+                class="text-decoration-none link-body-emphasis">
+                    Date
+                    {{if eq .Sort "created_at"}}
+                        {{if eq .Order "asc"}}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {{else if eq .Order "desc"}}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {{end}}
+                    {{end}}
+                </a>
+            </th>
             <th scope="col">Actions</th>
         </tr>
     </thead>

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"io"
 	"io/fs"
+	"slices"
 	"sort"
 	"syscall"
 	"time"
@@ -108,9 +109,20 @@ func (gs *GalleryService) ByID(id int) (*Gallery, error) {
 	return &gallery, nil
 }
 
-func (gs *GalleryService) ByUserID(userID int) ([]Gallery, error) {
-	rows, err := gs.DB.Query(`
-		SELECT id, title, created_at FROM galleries WHERE user_id=$1 ORDER BY created_at DESC`, userID)
+func (gs *GalleryService) ByUserID(userID int, sort, order string) ([]Gallery, error) {
+	sort = strings.ToLower(sort)
+	order = strings.ToUpper(order)
+
+	if !slices.Contains(gs.sortableColumns(), sort) {
+		sort = "created_at"
+	}
+
+	if order != "ASC" && order != "DESC" {
+		order = "DESC"
+	}
+
+	query := fmt.Sprintf("SELECT id, title, created_at FROM galleries WHERE user_id=$1 ORDER BY %s %s", sort, order)
+	rows, err := gs.DB.Query(query, userID)
 
 	if err != nil {
 		return nil, fmt.Errorf("query galleries by user: %w", err)
@@ -287,6 +299,10 @@ func (gs *GalleryService) extensions() []string {
 
 func (gs *GalleryService) imageContentTypes() []string {
 	return []string{"image/jpeg", "image/png", "image/gif"}
+}
+
+func (gs *GalleryService) sortableColumns() []string {
+	return []string{"title", "created_at"}
 }
 
 func hasExtension(file string, extensions []string) bool {
