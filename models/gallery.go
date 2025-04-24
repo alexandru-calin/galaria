@@ -180,6 +180,32 @@ func (gs *GalleryService) Delete(id int) error {
 	return nil
 }
 
+func (gs *GalleryService) DeleteByUserID(id int) error {
+	rows, err := gs.DB.Query(`
+		DELETE FROM galleries WHERE user_id=$1 RETURNING id`, id)
+
+	if err != nil {
+		return fmt.Errorf("deleting galleries by user: %w", err)
+	}
+
+	for rows.Next() {
+		var id int
+		rows.Scan(&id)
+
+		err = os.RemoveAll(gs.galleryDir(id))
+		if err != nil {
+			return fmt.Errorf("deleting galleries by user:%w", err)
+		}
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return fmt.Errorf("deleting galleries by user:%w", err)
+	}
+
+	return nil
+}
+
 func (gs *GalleryService) Images(galleryID int) ([]Image, error) {
 	globPattern := filepath.Join(gs.galleryDir(galleryID), "*")
 

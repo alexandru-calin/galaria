@@ -55,6 +55,17 @@ func (us *UserService) Create(email, password string) (*User, error) {
 	return &user, nil
 }
 
+func (us *UserService) Delete(id int) error {
+	_, err := us.DB.Exec(`
+		DELETE FROM users WHERE id=$1`, id)
+
+	if err != nil {
+		return fmt.Errorf("deleting user: %w", err)
+	}
+
+	return nil
+}
+
 func (us *UserService) Authenticate(email, password string) (*User, error) {
 	email = strings.ToLower(email)
 

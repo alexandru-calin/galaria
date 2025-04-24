@@ -1,0 +1,19 @@
+{{define "main"}}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Settings</li>
+    </ol>
+</nav>
+<h1 class="mb-5 fw-semibold">{{currentUser.Email}}</h1>
+<h5 class="mb-3 fw-semibold">Dangerous actions</h5>
+<form
+  action="/users/me/delete"
+  method="post"
+  onsubmit="return confirm('Are you sure you want to delete your account?');"
+  >
+    {{csrfField}}
+    <button type="submit" class="btn btn-danger btn-sm">Delete account</button>
+    <p class="form-text">Your account and all associated galleries will be deleted permanently</p>
+</form>
+{{end}}

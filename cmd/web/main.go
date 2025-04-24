@@ -120,6 +120,7 @@ func run(cfg config) error {
 	// Setup controllers
 	usersC := controllers.Users{
 		UserService:          userService,
+		GalleryService:       galleryService,
 		SessionService:       sessionService,
 		PasswordResetService: passwordResetService,
 		EmailService:         emailService,
@@ -129,6 +130,7 @@ func run(cfg config) error {
 	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(ui.FS, "base.html", "users/password-forgot.html"))
 	usersC.Templates.CheckYourEmail = views.Must(views.ParseFS(ui.FS, "base.html", "users/check-your-email.html"))
 	usersC.Templates.ResetPassword = views.Must(views.ParseFS(ui.FS, "base.html", "users/password-reset.html"))
+	usersC.Templates.Me = views.Must(views.ParseFS(ui.FS, "base.html", "users/me.html"))
 
 	galleriesC := controllers.Galleries{
 		GalleryService: galleryService,
@@ -151,7 +153,6 @@ func run(cfg config) error {
 	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(ui.FS, "base.html", "home.html"))))
 	r.Get("/assets/*", http.StripPrefix("/assets", assetsHandler).ServeHTTP)
 	r.Get("/register", usersC.New)
-	r.Post("/users", usersC.Create)
 	r.Get("/login", usersC.Login)
 	r.Post("/login", usersC.ProcessLogin)
 	r.Post("/logout", usersC.ProcessLogout)
@@ -160,6 +161,14 @@ func run(cfg config) error {
 	r.Get("/reset-password", usersC.ResetPassword)
 	r.Post("/reset-password", usersC.ProcessResetPassword)
 	r.Post("/change-theme", usersC.ChangeTheme)
+	r.Route("/users", func(r chi.Router) {
+		r.Post("/", usersC.Create)
+		r.Group(func(r chi.Router) {
+			r.Use(umw.RequireUser)
+			r.Get("/me", usersC.Me)
+			r.Post("/me/delete", usersC.Delete)
+		})
+	})
 	r.Route("/galleries", func(r chi.Router) {
 		r.Get("/all", galleriesC.All)
 		r.Get("/{id}", galleriesC.Show)

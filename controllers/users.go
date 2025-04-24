@@ -17,8 +17,10 @@ type Users struct {
 		ForgotPassword Template
 		CheckYourEmail Template
 		ResetPassword  Template
+		Me             Template
 	}
 	UserService          *models.UserService
+	GalleryService       *models.GalleryService
 	SessionService       *models.SessionService
 	PasswordResetService *models.PasswordResetService
 	EmailService         *models.EmailService
@@ -207,9 +209,30 @@ func (u Users) ProcessResetPassword(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
-func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
+func (u Users) Me(w http.ResponseWriter, r *http.Request) {
+	u.Templates.Me.Execute(w, r, nil)
+}
+
+func (u Users) Delete(w http.ResponseWriter, r *http.Request) {
 	user := context.User(r.Context())
-	fmt.Fprintf(w, "Current user: %s\n", user.Email)
+
+	err := u.GalleryService.DeleteByUserID(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	err = u.UserService.Delete(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	setCookie(w, CookieFlash, "Your account was deleted successfully")
+
+	http.Redirect(w, r, "/login", http.StatusFound)
 }
 
 func (u Users) ChangeTheme(w http.ResponseWriter, r *http.Request) {
