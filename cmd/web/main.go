@@ -125,6 +125,7 @@ func run(cfg config) error {
 		PasswordResetService: passwordResetService,
 		EmailService:         emailService,
 	}
+	usersC.Templates.Home = views.Must(views.ParseFS(ui.FS, "base.html", "home.html"))
 	usersC.Templates.New = views.Must(views.ParseFS(ui.FS, "base.html", "users/register.html"))
 	usersC.Templates.Login = views.Must(views.ParseFS(ui.FS, "base.html", "users/login.html"))
 	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(ui.FS, "base.html", "users/password-forgot.html"))
@@ -139,7 +140,6 @@ func run(cfg config) error {
 	galleriesC.Templates.Edit = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/edit.html"))
 	galleriesC.Templates.Index = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/index.html"))
 	galleriesC.Templates.Show = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/show.html"))
-	galleriesC.Templates.All = views.Must(views.ParseFS(ui.FS, "base.html", "galleries/all.html"))
 
 	// Setup router and routes
 	r := chi.NewRouter()
@@ -150,7 +150,7 @@ func run(cfg config) error {
 
 	assetsHandler := http.FileServer(http.Dir("assets"))
 
-	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(ui.FS, "base.html", "home.html"))))
+	r.Get("/", usersC.Home)
 	r.Get("/assets/*", http.StripPrefix("/assets", assetsHandler).ServeHTTP)
 	r.Get("/register", usersC.New)
 	r.Get("/login", usersC.Login)
@@ -170,7 +170,6 @@ func run(cfg config) error {
 		})
 	})
 	r.Route("/galleries", func(r chi.Router) {
-		r.Get("/all", galleriesC.All)
 		r.Get("/{id}", galleriesC.Show)
 		r.Get("/{id}/images/{filename}", galleriesC.Image)
 		r.Group(func(r chi.Router) {

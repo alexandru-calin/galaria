@@ -1,13 +1,24 @@
 {{define "main"}}
-<div class="row align-items-center g-0">
+<div class="row align-items-center g-0 mb-5">
     <div class="col-md-6 text-center text-md-start">
         <h1 class="fw-semibold">Welcome! Let's Create Something Together.</h1>
         <p class="lead">Create galleries to easily organize and share your images with the world.</p>
         <a href="/galleries/new" class="btn btn-primary mt-2 me-2">Get started</a>
-        <a href="/galleries/all" class="btn btn-outline-primary mt-2">Explore galleries</a>
     </div>
     <div class="col-md-6 mt-4 mt-md-0">
         <img src="/assets/bg.jpg" class="img-fluid rounded">
     </div>
 </div>
+
+<h2 class="mb-4 fw-semibold">Latest galleries</h2>
+{{range .Galleries}}
+    <a href="/galleries/{{.ID}}" class="text-decoration-none">
+        <div class="card mb-2">
+            <div class="card-body">
+                <h5 class="card-title">{{.Title}}</h5>
+                <p class="card-text">{{.CreatedAt}}</p>
+            </div>
+        </div>
+    </a>
+{{end}}
 {{end}}

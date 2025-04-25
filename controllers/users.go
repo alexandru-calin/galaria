@@ -12,6 +12,7 @@ import (
 
 type Users struct {
 	Templates struct {
+		Home           Template
 		New            Template
 		Login          Template
 		ForgotPassword Template
@@ -24,6 +25,36 @@ type Users struct {
 	SessionService       *models.SessionService
 	PasswordResetService *models.PasswordResetService
 	EmailService         *models.EmailService
+}
+
+func (u Users) Home(w http.ResponseWriter, r *http.Request) {
+	type Gallery struct {
+		ID        int
+		Title     string
+		CreatedAt string
+		UpdatedAt string
+	}
+	var data struct {
+		Galleries []Gallery
+	}
+
+	galleries, err := u.GalleryService.Latest()
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
+		return
+	}
+
+	for _, gallery := range galleries {
+		data.Galleries = append(data.Galleries, Gallery{
+			ID:        gallery.ID,
+			Title:     gallery.Title,
+			CreatedAt: gallery.CreatedAt.Format("January 02, 2006 15:04"),
+			UpdatedAt: gallery.UpdatedAt.Format("January 02, 2006 15:04"),
+		})
+	}
+
+	u.Templates.Home.Execute(w, r, data, nil)
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {

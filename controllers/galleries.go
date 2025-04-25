@@ -33,36 +33,6 @@ func (g Galleries) New(w http.ResponseWriter, r *http.Request) {
 	g.Templates.New.Execute(w, r, data)
 }
 
-func (g Galleries) All(w http.ResponseWriter, r *http.Request) {
-	type Gallery struct {
-		ID        int
-		Title     string
-		CreatedAt string
-		UpdatedAt string
-	}
-	var data struct {
-		Galleries []Gallery
-	}
-
-	galleries, err := g.GalleryService.All()
-	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "Oops, something went wrong...", http.StatusInternalServerError)
-		return
-	}
-
-	for _, gallery := range galleries {
-		data.Galleries = append(data.Galleries, Gallery{
-			ID:        gallery.ID,
-			Title:     gallery.Title,
-			CreatedAt: gallery.CreatedAt.Format("January 02, 2006 15:04"),
-			UpdatedAt: gallery.UpdatedAt.Format("January 02, 2006 15:04"),
-		})
-	}
-
-	g.Templates.All.Execute(w, r, data, nil)
-}
-
 func (g Galleries) Create(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		UserID int

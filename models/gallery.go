@@ -60,9 +60,9 @@ func (gs *GalleryService) Create(userID int, title string) (*Gallery, error) {
 	return &gallery, nil
 }
 
-func (gs *GalleryService) All() ([]Gallery, error) {
+func (gs *GalleryService) Latest() ([]Gallery, error) {
 	rows, err := gs.DB.Query(`
-		SELECT id, title, created_at, updated_at FROM galleries ORDER BY created_at DESC`)
+		SELECT id, title, created_at, updated_at FROM galleries ORDER BY created_at DESC LIMIT 10`)
 
 	if err != nil {
 		return nil, fmt.Errorf("retrieving all galleries: %w", err)
