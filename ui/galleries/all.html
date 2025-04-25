@@ -1,15 +1,9 @@
 {{define "main"}}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/">Home</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Galleries</li>
-    </ol>
-</nav>
 <h1 class="mb-4 fw-semibold">Latest Galleries</h1>
 <div class="row row-cols-1 g-2">
     {{range .Galleries}}
     <a href="/galleries/{{.ID}}" class="text-decoration-none">
-        <div class="card">
+        <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">{{.Title}}</h5>
                 <p class="card-text">{{.CreatedAt}}</p>

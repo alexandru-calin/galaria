@@ -1,19 +1,26 @@
 {{define "main"}}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/">Home</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Settings</li>
-    </ol>
-</nav>
-<h1 class="mb-5 fw-semibold">{{currentUser.Email}}</h1>
+<h1 class="mb-5 fw-semibold text-break">{{currentUser.Email}}</h1>
 <h5 class="mb-3 fw-semibold">Dangerous actions</h5>
-<form
-  action="/users/me/delete"
-  method="post"
-  onsubmit="return confirm('Are you sure you want to delete your account?');"
-  >
-    {{csrfField}}
-    <button type="submit" class="btn btn-danger btn-sm">Delete account</button>
-    <p class="form-text">Your account and all associated galleries will be deleted permanently</p>
-</form>
+<button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delete">Delete account</button>
+<div class="modal" tabindex="-1" id="delete">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete your account</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete your account?</p>
+                <p>Your account and all associated galleries will be deleted permanently.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="/users/me/delete" method="post">
+                    {{csrfField}}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {{end}}

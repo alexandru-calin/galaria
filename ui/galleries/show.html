@@ -6,9 +6,8 @@
         {{range .Images}}
             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <a href="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}" title="{{.FilenameEscaped}}" class="text-decoration-none">
-                    <div class="card text-end border-0">
+                    <div class="card border-0">
                         <img loading="lazy" src="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}" class="w-100 object-fit-cover card-img-top" height="250">
-                        <p class="card-text text-muted pe-2">{{.CreatedAt}}</p>
                     </div>
                 </a>
             </div>

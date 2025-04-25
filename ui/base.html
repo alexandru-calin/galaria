@@ -17,9 +17,13 @@
                         {{if currentUser}}
                             <li class="nav-item dropdown">
                                 <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                    {{currentUser.Email}}
+                                    <span class="d-md-none">
+                                        <i class="bi bi-person"></i>
+                                        User
+                                    </span>
+                                    <span class="d-none d-md-inline">{{currentUser.Email}}</span>
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
                                         <a class='dropdown-item' href="/galleries">My Galleries</a>
                                     </li>
@@ -43,7 +47,7 @@
                                 <a href="/register" class='nav-link {{if isCurrentPath "register"}}active{{end}}'>Register</a>
                             </li>
                         {{end}}
-                        <li class="nav-item dropdown ms-4">
+                        <li class="nav-item dropdown">
                             <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                                 {{if eq currentTheme "dark"}}
                                     <i class="bi bi-moon"></i>
