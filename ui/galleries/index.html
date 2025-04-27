@@ -1,5 +1,8 @@
 {{define "main"}}
-<h1 class="mb-4 fw-semibold">My Galleries</h1>
+<h1 class="mb-4 fw-semibold">
+    <i class="bi bi-person"></i>
+    {{currentUser.Email}}
+</h1>
 {{if .Flash}}
     <div class="alert alert-success alert-dismissible" role="alert">
         {{.Flash}}
@@ -77,5 +80,5 @@
         {{end}}
     </tbody>
 </table>
-<a href="/galleries/new" class="btn btn-primary">Create Gallery</a>
+<a href="/galleries/new" class="btn btn-primary">Create gallery</a>
 {{end}}
