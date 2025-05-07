@@ -5,6 +5,8 @@ This is a Web Application built with Go that allows people to create and share i
 - [Features](#features)
 - [Getting Started](#getting-started)
 
+![Alt text](/screens/collage.jpg)
+
 ## Features
 
 - MVC architectural pattern
